@@ -1,6 +1,6 @@
 # TableFlip - Functional Requirements and Acceptance Criteria
 
-Author: Zuzana Rubinová (BA) · Reviewed with: Eman Abdai (QA) · Sources: business requirements BR1-BR9, project charter, risk register
+Author: Zuzana Rubinová (BA) · Reviewed with: Eman Abdai (QA) · Sources: business requirements BR1-BR10, project charter, risk register
 
 All requirements are mandatory. A requirement is finished when all its acceptance criteria pass in the test environment.
 
@@ -10,9 +10,9 @@ All requirements are mandatory. A requirement is finished when all its acceptanc
 
 | Decision | Value |
 | :---- | :---- |
-| Default stay duration (closes R2) | **120 minutes.** Used for every phone and walk-in booking, and for online bookings where the guest does not choose. |
-| Durations a guest can choose online | 1 h, 1 h 30, 2 h, 2 h 30, 3 h |
-| Tables (assumption, closes R8) | 12 tables: T1-T4 = 2 seats, T5-T9 = 4 seats, T10-T11 = 6 seats, T12 = 8 seats |
+| Default and maximum stay duration (BR9, closes R2) | **120 minutes.** Used for every phone and walk-in booking, and for online bookings where the guest does not choose. No booking can be made for longer. |
+| Durations a guest can choose online | 1 h, 1 h 30, 2 h |
+| Tables (BR9, closes R8) | 12 tables, **50 seats**: T1-T4 = 2 seats, T5-T8 = 4 seats, T9-T11 = 6 seats, T12 = 8 seats |
 | Opening hours (assumption) | Tuesday-Sunday 11:00-23:00, closed Mondays. A booking must start and end within opening hours. |
 | Start times | Online: every 15 minutes. Staff: every 5 minutes. |
 | Online bookings | At least 15 minutes before the start time, at most 30 days ahead |
@@ -33,7 +33,7 @@ The tables, opening hours, closed days and the values above are kept in a **sett
 
 ## 3. Guest booking
 
-### FR1. Booking form (BR1)
+### FR1. Booking form (BR1, BR9)
 A public page, available at any time without staff, with fields in this order: date, party size (1-8), stay duration (optional, pre-set to 2 h), time, name, and phone or email (at least one).
 
 The time list shows only times where:
@@ -53,13 +53,13 @@ The list is recalculated whenever the date, party size or duration changes. If n
 * Mondays and dates more than 30 days ahead cannot be chosen.
 * Without phone and email, the booking is not accepted.
 * A guest who does not choose a duration gets 120 minutes.
-* A request sent directly to the server for 9 guests, 19:07, or 21:30 with 2 h (ends after closing) is refused and nothing is saved.
+* A request sent directly to the server for 9 guests, 19:07, 2 h 30, or 21:30 with 2 h (ends after closing) is refused and nothing is saved.
 
 ### FR2. Table allocation (BR2, BR4) - critical component
 The system gives the booking a table that is suitable and free for the **whole** stay. If several are free, it picks the **smallest** one; among equal sizes, the lowest number. It refuses only if no suitable table is free. Tables are never combined.
 
 **Acceptance criteria** (empty restaurant unless stated)
-* 2 guests → T1; 3 or 4 → T5; 5 or 6 → T10; 7 or 8 → T12.
+* 2 guests → T1; 3 or 4 → T5; 5 or 6 → T9; 7 or 8 → T12.
 * T1 booked 18:00-20:00: 2 guests at 20:00 → T1; at 19:45 → T2.
 * T1 booked 20:00-22:00: 2 guests at 18:30 for 2 h → T2.
 * T1-T4 booked 19:00-21:00: 2 guests at 19:30 → T5 (a bigger table, not a refusal).
@@ -103,7 +103,7 @@ Staff pages require a username and password. Staff accounts are created by the p
 **Acceptance criteria**
 * Without logging in, no staff page and no booking data can be opened.
 
-### FR7. Phone bookings (BR6, BR9)
+### FR7. Phone bookings (BR6, BR10)
 Staff enter date, time, party size, name and phone or email. The duration is always 120 minutes. The table is chosen automatically, or staff pick one from a list that shows only suitable free tables. Unlike online bookings, a staff booking may start less than 15 minutes from now. Staff may also enter a time earlier today, to enter bookings written on paper while the system was down. Phone bookings follow exactly the same allocation rules as online bookings. If the chosen table is no longer free, nothing is saved and staff see which booking it clashes with. Rules can never be overridden.
 
 **Acceptance criteria**
@@ -126,8 +126,8 @@ Staff can change a Confirmed booking's date, time, party size, table, name and c
 
 **Acceptance criteria**
 * A booking at T5 19:00 for 4 moved to 19:30 stays at T5.
-* Changed to 5 guests, it moves to T10 and staff see "Table changed from T5 to T10".
-* With T10-T12 taken, a change to 6 guests is refused and the booking is unchanged.
+* Changed to 5 guests, it moves to T9 and staff see "Table changed from T5 to T9".
+* With T9-T12 taken, a change to 6 guests is refused and the booking is unchanged.
 * After staff cancel a booking, its table can be booked again for that time.
 
 ### FR10. End of stay (BR2, BR8)
@@ -160,6 +160,10 @@ After login, staff see today's bookings and can switch to any other day. The vie
 * **Booking list**, in start-time order: time, table, guests, name, contact, status and reference. It also shows the number of bookings and guests for the day. A booking whose start time has passed and is not marked as no-show is labelled "Late", and from 15 minutes after the start "No-show possible".
 * **Table board**: one card per table, showing whether it is free, taken or over time now (FR10), its next booking, and its free periods for the rest of the day.
 
+**Acceptance criteria**
+* 5 bookings today, 1 cancelled: the list shows 4 active bookings in time order with the correct number of guests.
+* At 18:00, T2 with bookings 18:30-20:30 and 21:00-23:00 shows "Free", next booking 18:30, free "18:00-18:30, 20:30-21:00".
+
 ### FR13. Search (BR8)
 One search box above the booking list. Searching starts after 2 characters and updates while staff type:
 * **Name:** matches any part of the name. Upper/lower case and accents are ignored, so "zoe" finds "Zoë".
@@ -169,8 +173,6 @@ One search box above the booking list. Searching starts after 2 characters and u
 The search covers **today and all future dates**. It shows **every** matching booking, sorted by date and time, with date, time, table, guests, contact and status, so staff can tell bookings under the same name apart. Today's matches are also **highlighted on the table board**. Clearing the box returns to the normal view.
 
 **Acceptance criteria**
-* 5 bookings today, 1 cancelled: the list shows 4 active bookings in time order with the correct number of guests.
-* At 18:00, T2 with bookings 18:30-20:30 and 21:00-23:00 shows "Free", next booking 18:30, free "18:00-18:30, 20:30-21:00".
 * Three bookings under "Novak" (two today at T3 and T7, one next week): searching "nov" lists all three, and T3 and T7 are highlighted on the board.
 * Searching "zoe", "621123" or "tf-7kq3xm" finds the matching booking.
 * Yesterday's bookings are not found by the search.
@@ -185,6 +187,8 @@ Every new, changed, extended or cancelled booking, every "guests left" and every
 
 ---
 
-## 5. Open issue
+## 5. Open issues
 
-BR9 says staff can keep taking bookings while the system is down, but the charter lists this as out of scope. **Proposal:** follow the charter. Paper bookings are entered later through FR7, which flags every clash instead of saving it. *Decision: Illia Nykytiak, end of week 6.*
+BR10 says staff can keep taking bookings while the system is down, but the charter lists this as out of scope. **Proposal:** follow the charter. Paper bookings are entered later through FR7, which flags every clash instead of saving it. *Decision: Illia Nykytiak, end of week 6.*
+
+BR9 limits each reservation to 120 minutes, but FR10 lets staff extend a stay when guests are still at the table. **Proposal:** keep it. Nobody can book longer than 120 minutes, and the extension only records that guests have not left yet, so the table is not given away while they are still there. *Decision: Eman Abdai, end of week 7.*
