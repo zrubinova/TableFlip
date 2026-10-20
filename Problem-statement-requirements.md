@@ -48,7 +48,9 @@ The table allocation must be trusted by the guest, who travels to the restaurant
 
 7\. Staff can release a table when a party has not arrived 15 minutes after its booking time. (A booking marked as a no-show frees its table for the rest of its time slot)
 
-8\. Staff can see, at any moment, all of the day's bookings and which tables are taken. (Every new, changed or cancelled booking appears in the staff view without a manual refresh of the book)
+8\. Staff can see, at any moment, all of the day's bookings and which tables are taken. (Every new, changed or cancelled booking appears in the staff view without a manual refresh of the book).
 
-9\. Staff can keep taking bookings when the system is down. (Re-entering a paper booking that clashes with an online one is flagged, not saved silently)
+9\. The restaurant has a maximum capacity of 50 seats, and each reservation is limited to 120 minutes.
+
+10\. Staff can keep taking bookings when the system is down. (Re-entering a paper booking that clashes with an online one is flagged, not saved silently)
 
