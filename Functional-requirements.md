@@ -2,7 +2,7 @@
 
 Author: Zuzana Rubinová (BA) · Reviewed with: Eman Abdai (QA) · Sources: business requirements BR1-BR10, project charter, risk register
 
-All requirements are mandatory. A requirement is finished when all its acceptance criteria pass in the test environment.
+All requirements in sections 3 and 4 are mandatory. A requirement is finished when all its acceptance criteria pass in the test environment. Section 6 lists nice-to-have requirements, built only if time allows once all mandatory requirements are done.
 
 ---
 
@@ -10,13 +10,14 @@ All requirements are mandatory. A requirement is finished when all its acceptanc
 
 | Decision | Value |
 | :---- | :---- |
-| Default and maximum stay duration (BR9, closes R2) | **120 minutes.** Used for every phone and walk-in booking, and for online bookings where the guest does not choose. No booking can be made for longer. |
+| Default and maximum stay duration (BR9, closes R2) | **120 minutes.** Used for online bookings where the guest does not choose, and for staff bookings where a table is free that long. No booking can be made for longer. |
 | Durations a guest can choose online | 1 h, 1 h 30, 2 h |
 | Tables (BR9, closes R8) | 12 tables, **50 seats**: T1-T4 = 2 seats, T5-T8 = 4 seats, T9-T11 = 6 seats, T12 = 8 seats |
 | Opening hours (assumption) | Tuesday-Sunday 11:00-23:00, closed Mondays. A booking must start and end within opening hours. |
 | Start times | Online: every 15 minutes. Staff: every 5 minutes. |
 | Online bookings | At least 15 minutes before the start time, at most 30 days ahead |
 | Largest group | 8 guests (the largest table). Larger groups are told to call. |
+| Staff booking stays (FR7) | 1 h to 2 h in 15-minute steps; shortest automatic stay 60 minutes when no table is free for 120 minutes |
 
 The tables, opening hours, closed days and the values above are kept in a **settings file**, not written into the program code, so the restaurant can change them later without a developer.
 
@@ -77,7 +78,8 @@ When several people book at the same moment, two of them can never get the same 
 * A double click on "Book" creates exactly one booking.
 
 ### FR4. Confirmation and refusal (BR3, BR4)
-Immediately after saving, the guest sees: reference, date, start and end time, **table number**, party size and name, plus a note to keep the reference for cancelling. If no table is free, the guest sees "Sorry, we have no free table for <n> guests on <date> at <time>. Please try another time." The form keeps everything they entered and nothing is saved.
+Immediately after saving, the guest sees: reference, date, start and end time, **table number**, party size and name, plus a note to keep the reference for cancelling.  If no table is free, the guest sees "Sorry, we have no free table for <n> guests on <date> at <time>. Please try another time." The form keeps everything they entered and nothing is saved.
+If the guests at that table before them stay longer, the booking may be **moved automatically** to another suitable table (FR9), and the guest is seated at the table shown in the staff view. A booking is never cancelled or shortened because of this: if no other table is free, it keeps its original table and time.
 
 **Acceptance criteria**
 * 4 guests, Friday 23 Oct 19:00, empty restaurant → shows the reference, "Friday, 23 October 2026", "19:00 - 21:00", "Table T5", "4 guests".
@@ -103,41 +105,56 @@ Staff pages require a username and password. Staff accounts are created by the p
 **Acceptance criteria**
 * Without logging in, no staff page and no booking data can be opened.
 
-### FR7. Phone bookings (BR6, BR10)
-Staff enter date, time, party size, name and phone or email. The duration is always 120 minutes. The table is chosen automatically, or staff pick one from a list that shows only suitable free tables. Unlike online bookings, a staff booking may start less than 15 minutes from now. Staff may also enter a time earlier today, to enter bookings written on paper while the system was down. Phone bookings follow exactly the same allocation rules as online bookings. If the chosen table is no longer free, nothing is saved and staff see which booking it clashes with. Rules can never be overridden.
+### FR7. Staff bookings: phone and walk-in (BR6)
+Phone bookings and walk-ins are entered in one staff booking form with a **"Walk-in"** checkbox. Staff enter date, time, party size, stay (optional), name and phone or email. Phone bookings and walk-ins follow exactly the same rules; the checkbox changes only this:
+
+* **Walk-in ticked:** date and time are set to now, rounded down to 5 minutes. Name and contact are optional.
+* **Walk-in not ticked:** name and phone or email (at least one) are required.
+
+The table is **always chosen automatically** by the same FR2 rules as online bookings; staff cannot pick a table. Right after saving, staff see the reference, table, and start and end time. Unlike online bookings, a staff booking may start less than 15 minutes from now, but never in the past (walk-ins are only rounded down to 5 minutes). If no suitable table is free, nothing is saved and staff see "No free table for <n> guests at <time>". Rules can never be overridden.
+
+**Stay length.** A stay never goes past closing time; if it would, it ends at closing instead.
+* **Stay chosen** (1 h, 1 h 15, 1 h 30, 1 h 45 or 2 h): the booking lasts exactly that long, or it is refused.
+* **Stay left empty:** the booking lasts 2 h if a suitable table is free for that long. If not, it gets the **longest stay that is still possible**, in 15-minute steps: 1 h 45, 1 h 30, 1 h 15, and at least **1 h**. The system chooses the table that allows that longest stay; if several do, the FR2 rules choose among them. Before saving a stay shorter than 2 h, staff see "Only <duration> available - guests must leave by <time>" and must confirm they have told the guests.
 
 **Acceptance criteria**
 * A phone booking for 4 at Friday 19:00 gets T5; an online request for 4 at 19:30 then gets T6.
-* T5 booked 19:00-21:00: for 4 guests at 19:30, the table list does not show T1-T5.
-* A paper booking re-entered for T5 after an online guest took T5 is not saved; staff see the clash and can choose another table.
-* At 20:00 staff can enter a booking for 20:05 today.
-* A booking for yesterday cannot be entered.
-
-### FR8. Walk-ins (BR6)
-Each table that is free now has a "Seat walk-in" button. Staff enter only the party size; name and contact are optional. The booking starts now and lasts 120 minutes, or ends at closing time if that comes sooner. It is refused if the table is not free for that whole time.
-
-**Acceptance criteria**
-* At 19:00, a walk-in for 3 at T5 → booking at T5, 19:00-21:00.
+* After saving, staff see the reference, the table and the start and end time.
+* T5-T12 taken at 19:00: a phone booking for 4 at 19:00 is not saved, and staff see "No free table for 4 guests at 19:00".
+* At 20:00 staff can enter a booking for 20:05 today, but not for 19:55 or for yesterday.
+* Without phone and email, a booking is accepted only if "Walk-in" is ticked.
+* At 19:02, a walk-in for 3 at T5 → booking at T5, 19:00-21:00.
 * At 21:40, a walk-in gets 21:40-23:00.
-* T1 is booked from 20:00: at 19:00 a walk-in at T1 is refused.
+* At 19:00, T1 is booked from 20:00 and T2 is free: a walk-in of 2 gets T2, 19:00-21:00.
+* At 19:00, T1 is booked from 20:00 and T2-T12 are taken: a walk-in of 2 gets T1; after staff confirm "Only 1 h available - guests must leave by 20:00", the booking is T1, 19:00-20:00.
+* At 19:00, T1 is booked from 20:00, T3 from 20:45, and the other tables are taken: a walk-in of 2 gets T3, 19:00-20:45 (the longest possible stay).
+* At 19:00, T1 is booked from 20:50 and the other tables are taken: the walk-in gets T1, 19:00-20:45 (rounded down to 15-minute steps).
+* At 19:30, T1 is booked from 20:00 and T2-T12 are taken: the walk-in is refused (less than 60 minutes free).
+* A shorter stay cannot be saved without the "guests must leave" confirmation.
+* T1 is booked from 20:00 and T2-T12 are taken: a phone booking for 2 at 19:00 with no stay chosen gets T1, 19:00-20:00, after the confirmation; with 1 h 30 chosen, it is refused; with 1 h chosen, it gets T1, 19:00-20:00.
+* With an empty restaurant, a phone booking for 2 at 19:00 with 1 h 15 chosen gets T1, 19:00-20:15.
 
-### FR9. Edit and cancel (BR5, BR8)
-Staff can change a Confirmed booking's date, time, party size, table, name and contact, and can cancel it, until its end time. After a change, the booking keeps its table if that table still fits; otherwise it gets a new table by the FR2 rules. If no table fits, the change is refused and the booking stays as it was.
+### FR8. Cancel and rebook (BR5, BR8)
+Staff can cancel a Confirmed booking until its end time. The table becomes free at once.
+
+Bookings cannot be edited. To change a booking (date, time, party size, name or contact), staff press **"Rebook"** on it. This opens the staff booking form (FR7) filled in with the booking's details. When staff save, the system looks for a table **as if the old booking were already cancelled**, so the booking can keep its own table, for example when a guest wants to come an hour later and their table is the only one free. If a table is found, the new booking is saved and the old one cancelled **in one step**. If not, nothing changes and the old booking stays as it was. The new booking has a new reference, which staff give to the guest.
 
 **Acceptance criteria**
-* A booking at T5 19:00 for 4 moved to 19:30 stays at T5.
-* Changed to 5 guests, it moves to T9 and staff see "Table changed from T5 to T9".
-* With T9-T12 taken, a change to 6 guests is refused and the booking is unchanged.
 * After staff cancel a booking, its table can be booked again for that time.
+* A booking at T5 19:00 for 4 rebooked for 5 guests: the new booking gets T9 and the T5 booking is cancelled.
+* With T9-T12 taken, rebooking for 6 guests is refused, and the original booking for 4 at T5 is unchanged.
+* A booking at T5 19:00-21:00 for 4; T6-T12 are taken 20:00-22:00. Rebooking it for 20:00 gives T5, 20:00-22:00, and the 19:00 booking is cancelled.
+* Same situation, but T5 is also booked from 21:00 by someone else: rebooking for 20:00 is refused and the 19:00 booking is unchanged.
+* After a rebooking, there is never a moment when both or neither of the two bookings are Confirmed.
 
-### FR10. End of stay (BR2, BR8)
+### FR9. End of stay (BR2, BR8)
 Allocation always uses the planned end time, so future bookings never wait for staff to press anything.
 
 **Guests left.** A Confirmed booking that has started has a **"Guests left"** button. Pressing it changes the end time to now, rounded down to 5 minutes, and marks the booking as "guests left". The status stays Confirmed. The table is free from that moment, so it can be given to walk-ins or new bookings at once.
 
 **Over time.** If the end time has passed and staff have not pressed "Guests left", the table card on the table board turns red: **"Over time - guests still here?"** It offers "Guests left" and "Extend stay". The warning stays until staff press one of them, or until closing time. The system never decides on its own that the guests have gone.
 
-**Extend stay.** If guests stay longer, staff choose a new end time, in 15-minute steps up to closing time. This works even after the end time has passed. If the table is free until the new end time, the extension is saved. If another booking on that table clashes, nothing is saved and staff see that booking. Staff can then move it to another table (FR9) and try again.
+**Extend stay.** If guests stay longer, staff choose a new end time, in 15-minute steps up to closing time. This works even after the end time has passed. If the table is free until the new end time, the extension is saved. If later bookings on that table clash, the system **moves each of them to another suitable free table** by the FR2 rules and saves the extension, all in one step. Staff see "Booking <reference> moved from <table> to <table>" for each moved booking, so they can seat that party at its new table. The seated guests are never asked to move. Only if a clashing booking cannot be moved is the extension refused: nothing changes, the later booking keeps its table and time, and staff see it.
 
 **Acceptance criteria**
 * T2 booked 19:00-21:00; at 20:32 staff press "Guests left": the booking now ends 20:30, T2 shows "Free", and a walk-in can be seated at T2 at once.
@@ -145,50 +162,70 @@ Allocation always uses the planned end time, so future bookings never wait for s
 * T2 booked 19:00-21:00 and nothing pressed: at 21:00 the T2 card turns red with "Over time - guests still here?", and it is still red at 21:30.
 * The "Over time" warning does not stop online guests from being given T2 for later times.
 * T2 booked 19:00-21:00, nothing after it: extending to 21:30 is saved, and online guests can no longer get T2 at 21:00.
-* T2 booked 19:00-21:00 and again from 21:00: extending to 21:30 is refused and the 21:00 booking is shown. After staff move that booking to T3, the extension is saved.
+* T2 booked 19:00-21:00 and again 21:00-23:00 for 2 guests; T1 taken, T3 free: extending to 21:30 is saved, the 21:00 booking moves to T3, and staff see "Booking <reference> moved from T2 to T3".
+* T2 booked 19:00-21:00 and again 21:00-23:00 for 2 guests; all other tables taken 21:00-23:00: extending to 21:30 is refused, nothing changes, and the 21:00 booking is shown.
+* After any extension, 0 clashing bookings and 0 parties at too-small tables exist.
 * At 21:10, a booking that ended at 21:00 can still be extended.
 
-### FR11. No-show (BR7)
+### FR10. No-show (BR7)
 Staff can mark a Confirmed booking as no-show from **15 minutes after its start time**. Before that, the button is disabled. Marking a no-show frees the table at once for the rest of the booking time.
 
 **Acceptance criteria**
 * Booking at 19:00: the button is disabled at 19:14 and enabled at 19:15.
 * After the no-show is marked at 19:20, the table shows as free and a walk-in can be seated there.
 
-### FR12. Staff view (BR8)
+### FR11. Staff view (BR8)
 After login, staff see today's bookings and can switch to any other day. The view has:
 * **Booking list**, in start-time order: time, table, guests, name, contact, status and reference. It also shows the number of bookings and guests for the day. A booking whose start time has passed and is not marked as no-show is labelled "Late", and from 15 minutes after the start "No-show possible".
-* **Table board**: one card per table, showing whether it is free, taken or over time now (FR10), its next booking, and its free periods for the rest of the day.
+* **Table board**: one card per table, showing whether it is free, taken or over time now (FR9), its next booking, and its free periods for the rest of the day.
 
 **Acceptance criteria**
 * 5 bookings today, 1 cancelled: the list shows 4 active bookings in time order with the correct number of guests.
 * At 18:00, T2 with bookings 18:30-20:30 and 21:00-23:00 shows "Free", next booking 18:30, free "18:00-18:30, 20:30-21:00".
-
-### FR13. Search (BR8)
+### FR12. Search (BR8)
 One search box above the booking list. Searching starts after 2 characters and updates while staff type:
 * **Name:** matches any part of the name. Upper/lower case and accents are ignored, so "zoe" finds "Zoë".
 * **Phone:** matches any part of the number. Spaces, dashes and "+" are ignored, so "621123" finds "+352 621 123 456".
 * **Reference:** with or without "TF-", any case.
 
-The search covers **today and all future dates**. It shows **every** matching booking, sorted by date and time, with date, time, table, guests, contact and status, so staff can tell bookings under the same name apart. Today's matches are also **highlighted on the table board**. Clearing the box returns to the normal view.
+The search covers **today and all future dates**. It shows **every** matching booking, sorted by date and time, with date, time, table, guests, contact and status, so staff can tell bookings under the same name apart. Clearing the box returns to the normal view.
 
 **Acceptance criteria**
-* Three bookings under "Novak" (two today at T3 and T7, one next week): searching "nov" lists all three, and T3 and T7 are highlighted on the board.
+* Three bookings under "Novak" (two today at T3 and T7, one next week): searching "nov" lists all three with their tables and dates.
 * Searching "zoe", "621123" or "tf-7kq3xm" finds the matching booking.
 * Yesterday's bookings are not found by the search.
 
-### FR14. Live updates (BR8)
-Every new, changed, extended or cancelled booking, every "guests left" and every no-show appears in every open staff view **within 5 seconds**, without refreshing the page. An update never closes a form that staff are filling in.
+### FR13. Live updates (BR8)
+Every new, extended, moved or cancelled booking, every "guests left" and every no-show appears in every open staff view **within 5 seconds**, without refreshing the page. An update never closes a form that staff are filling in.
 
 **Acceptance criteria**
 * With the staff view open on two devices, an online booking appears on both within 5 seconds.
 * In a test run of at least 20 changes, each one appears in the staff view within 5 seconds.
-* Staff typing a phone booking keep their form when an online booking arrives.
+* Staff typing a staff booking keep their form when an online booking arrives.
 
 ---
 
 ## 5. Open issues
 
-BR10 says staff can keep taking bookings while the system is down, but the charter lists this as out of scope. **Proposal:** follow the charter. Paper bookings are entered later through FR7, which flags every clash instead of saving it. *Decision: Illia Nykytiak, end of week 6.*
+BR10 says staff can keep taking bookings while the system is down, but the charter lists this as out of scope. **Proposal:** follow the charter. The system does not support re-entering paper bookings afterwards: staff bookings cannot start in the past (FR7). *Decision: Illia Nykytiak, end of week 6.*
 
-BR9 limits each reservation to 120 minutes, but FR10 lets staff extend a stay when guests are still at the table. **Proposal:** keep it. Nobody can book longer than 120 minutes, and the extension only records that guests have not left yet, so the table is not given away while they are still there. *Decision: Eman Abdai, end of week 7.*
+BR9 limits each reservation to 120 minutes, but FR9 lets staff extend a stay when guests are still at the table. **Proposal:** keep it. Nobody can book longer than 120 minutes, and the extension only records that guests have not left yet, so the table is not given away while they are still there. Where possible, the next party is moved to another table instead of asking the seated guests to leave. *Decision: Eman Abdai, end of week 7.*
+
+Moving the next party when a stay is extended (FR9) is the largest piece of staff-side work, because several bookings must change in one step. **Proposal:** keep it, because it lets seated guests finish without being rushed. If the team falls behind before feature freeze, replace it with the simpler rule: a clashing extension is refused and staff see the clashing booking. *Decision: Illia Nykytiak with Dylan Almeida and Abdourrahmane Makni, end of week 8.*
+
+
+---
+
+## 6. Nice to have
+
+### N1. Margin after bookings in progress (BR2, BR8)
+Once a booking has started, and until staff press "Guests left" or mark it as no-show, its table is also blocked for **30 minutes after its end time** for any new booking. This gives seated guests time to finish or extend their stay. Bookings that were already made before it started are not affected. The 30 minutes are kept in the settings file.
+
+The margin applies wherever the system looks for a free table: the online time list (FR1), table allocation (FR2), staff bookings (FR7), rebooking (FR8), moving bookings when a stay is extended (FR9), and the free periods on the table board (FR11). It depends on the current time, so it is checked by the program code. The database check from FR3 still guarantees that no two bookings clash.
+
+**Acceptance criteria** (T2-T12 booked all afternoon, T1 booked 12:00-14:00)
+* At 11:30, 2 guests at 14:00 → T1. At 12:30, 2 guests at 14:00 or 14:15 → refused; at 14:30 → T1.
+* At 13:30 staff press "Guests left" on T1: 2 guests at 13:45 → T1.
+* At 14:10 the T1 guests are still there (over time): a walk-in of 2 → refused; a booking at 14:30 → T1.
+* A booking for 14:00 made at 11:30 is still Confirmed at T1 after the 12:00 guests sit down.
+* At 13:00, the T1 card shows free from 14:30.
