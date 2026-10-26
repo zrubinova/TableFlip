@@ -52,5 +52,4 @@ The table allocation must be trusted by the guest, who travels to the restaurant
 
 9\. The restaurant has a maximum capacity of 50 seats, and each reservation is limited to 120 minutes.
 
-10\. Staff can keep taking bookings when the system is down. (Re-entering a paper booking that clashes with an online one is flagged, not saved silently)
-
+10\. Staff can keep taking bookings when the system is down. (Re-entering a paper booking that clashes with an online one is flagged, not saved silently). Out of scope for this project (see charter). Staff keep a paper record outside the system.
