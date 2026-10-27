@@ -137,3 +137,13 @@ AI assistance is used to generate and review test scenarios. Actual test results
 AI was used to assist in preparing test scenarios, test steps, and expected results based on the TableFlip requirements.
 
 All test cases require review before execution. AI-generated scenarios do not represent actual test results.
+---------------------------------------------------------------------------------------------------------------------------
+## Test Case Review — Week 7
+
+The existing QA Test Cases document contains eight draft scenarios covering core booking and allocation behavior.
+
+The Week 7 blueprint review identified additional testing needs involving allocation priority, SQLite transaction safety, rollback, persistence, staff access, staff view and no-show timing.
+
+The existing test cases will be retained and expanded during M2 (Week 8) to provide coverage of FR1–FR7.
+
+**Test execution status:** Not Executed. No application test results or confirmed defects are reported at this stage.
