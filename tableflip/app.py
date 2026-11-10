@@ -2,6 +2,9 @@
 
 from datetime import datetime, time, timedelta
 
+import base64
+from pathlib import Path
+
 import streamlit as st
 
 from tableflip.allocation import (
@@ -14,7 +17,91 @@ from tableflip.database import (
 )
 
 
+
+def add_background():
+    # Load the background image.
+    image_path = Path(__file__).parent / "assets" / "tableflip_background.png"
+    encoded = base64.b64encode(image_path.read_bytes()).decode()
+
+    # Apply the background and adjust text colors.
+    st.markdown(
+        f"""
+        <style>
+        /* Food-themed page background */
+        [data-testid="stAppViewContainer"] {{
+            background-image: url("data:image/png;base64,{encoded}");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+
+        [data-testid="stHeader"] {{
+            background-color: transparent;
+        }}
+
+        /* Dark text on the light background */
+        [data-testid="stAppViewContainer"] h1,
+        [data-testid="stAppViewContainer"] h2,
+        [data-testid="stAppViewContainer"] h3,
+        [data-testid="stAppViewContainer"] h4,
+        [data-testid="stMarkdownContainer"] > p,
+        [data-testid="stWidgetLabel"] p,
+        [data-baseweb="tab"] {{
+            color: #2f241b !important;
+        }}
+
+        /* Captions and secondary information */
+        [data-testid="stCaptionContainer"],
+        [data-testid="stCaptionContainer"] p {{
+            color: #66584d !important;
+        }}
+
+        /* White text inside dark input fields */
+        [data-testid="stAppViewContainer"] input,
+        [data-testid="stAppViewContainer"] textarea,
+        [data-testid="stAppViewContainer"] [data-baseweb="select"] span {{
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }}
+
+        /* Buttons: dark background with white text */
+        [data-testid="stAppViewContainer"] [data-testid="stButton"] button,
+        [data-testid="stAppViewContainer"] [data-testid="stFormSubmitButton"] button {{
+            background-color: #292931 !important;
+            color: #ffffff !important;
+            border: 1px solid #55555f !important;
+        }}
+
+        /* Keep all button text white */
+        [data-testid="stAppViewContainer"] [data-testid="stButton"] button *,
+        [data-testid="stAppViewContainer"] [data-testid="stFormSubmitButton"] button * {{
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+        }}
+
+        /* Slightly lighter buttons when hovering */
+        [data-testid="stAppViewContainer"] button:hover {{
+            background-color: #42424d !important;
+        }}
+
+        /* Visually distinguish disabled buttons */
+        [data-testid="stAppViewContainer"] button:disabled {{
+            opacity: 0.55;
+            cursor: not-allowed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+
+
+
 def main():
+    add_background()
+
     st.title("TableFlip")
     st.caption("Local only prototype")
     try:
@@ -25,7 +112,7 @@ def main():
         return
 
     now = restaurant_now(settings)
-    guest_tab, staff_tab = st.tabs(["Book a table", "Demo access - not secure"])
+    guest_tab, staff_tab = st.tabs(["Book a table", "Demo staff access"])
     with guest_tab:
         booking_form(settings, now)
     with staff_tab:
@@ -81,7 +168,7 @@ def booking_form(settings, now):
 
 def staff_view(settings, now):
     st.subheader("Staff overview")
-    st.caption("Demo access - not secure. Use made-up guest details only.")
+    st.caption("Demo staff access")
     password = st.text_input("Staff password", type="password", key="staff_password")
     # Streamlit executes both tabs. Do not query or render booking data until
     # this session's input matches the settings password.
