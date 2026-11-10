@@ -1,2 +1,20 @@
 # macOS Finder files
 .DS_Store
+
+# PyCharm
+.idea/
+
+# Python virtual environment
+.venv/
+
+# Python temporary files
+__pycache__/
+*.pyc
+
+# Local SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Streamlit secrets
+.streamlit/secrets.toml

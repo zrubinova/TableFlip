@@ -1,0 +1,26 @@
+# Restaurant-local times; Monday = 0, Sunday = 6.
+timezone = "Europe/Luxembourg"
+open_days = [1, 2, 3, 4, 5, 6]
+opening_time = "11:00"
+closing_time = "23:00"
+start_interval_minutes = 15
+past_tolerance_minutes = 15
+allowed_durations = [60, 90, 120]
+default_duration = 120
+maximum_party_size = 8
+# Shared demonstration password only; this is not real authentication.
+staff_password = "tableflip-demo"
+
+[tables]
+T1 = 2
+T2 = 2
+T3 = 2
+T4 = 2
+T5 = 4
+T6 = 4
+T7 = 4
+T8 = 4
+T9 = 6
+T10 = 6
+T11 = 6
+T12 = 8
