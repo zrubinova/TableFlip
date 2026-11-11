@@ -28,13 +28,11 @@ python3.14 -m venv .venv
 On Windows, use `py -3.14 -m venv .venv` and replace `.venv/bin/python` with
 `.venv\Scripts\python.exe`. SQLite, TOML reading and unittest are included in Python.
 
-No package installation or upgrade was performed during this development step.
-
 ## Try a booking
 
-Use made-up details. Choose a future Tuesday–Sunday, an available quarter-hour,
-and a stay ending by 23:00. For example, four guests at 19:00 with the default
-duration receive T5 until 21:00 in an empty database. Submitting another overlapping
+Use made-up details. Choose an open day (Tuesday–Sunday), a valid quarter-hour
+start time, and a stay ending by 23:00. For example, four guests at 19:00
+with the default duration receive T5 until 21:00 in an empty database. Submitting another overlapping
 four-person booking uses T6. Confirmation includes the saved reference and table.
 
 The database is created automatically at `tableflip/data/tableflip.db`, regardless
@@ -79,6 +77,7 @@ always uses the actual restaurant clock. Hover over a disabled action for its re
 - `tableflip/settings.toml`: table capacities, opening hours, duration choices,
   timezone and demonstration staff password.
 - `tableflip/tests/`: standard-library unittest tests, including Streamlit AppTest checks.
+- `tableflip/assets/tableflip_background.png`: decorative page background.
 
 T1–T4 seat 2 each, T5–T8 seat 4, T9–T11 seat 6, and T12 seats 8: 50 seats total.
 Choose the smallest available suitable table, then the lowest numeric table number.
@@ -159,6 +158,6 @@ member's computer has not yet been verified.
 
 ## AI assistance
 
-Codex assisted with planning, code, documentation and tests. See
-`docs/AI_Usage_Log.md`. Team members must review and understand the implementation;
-generated code alone is not evidence that a requirement passes.
+See `docs/AI_Usage_Log.md` for the main AI-assisted contributions. The team
+reviewed and manually tested the application; generated tests alone are not
+evidence that a requirement passes.
