@@ -2,8 +2,8 @@
 
 **Execution date:** 25 November 2026  
 **QA owner:** Eman Abdai, per the project charter  
-**QA documentation baseline:** `QA/test-plan` at `2c9bcf26d47ccb8afd0ac75632cd014668695ad9`  
-**Application tested:** [Developer commit e09b423](https://github.com/zrubinova/TableFlip/commit/e09b423f6c94df345eab907ad7d6c1c14f578711)  
+**QA documentation baseline:** `QA/test-plan`  
+**Application tested:** Developer commit 
 **Release sign-off:** Pending
 
 ## Executive summary
@@ -18,22 +18,22 @@ Proceed with the local prototype dry run once the team confirms the approved sco
 
 Prioritize the allocation engine because booking conflicts and undersized assignments directly affect guests and staff. Verify the committed SQLite record as well as the UI response. Combine allocation rule tests, database integration and rollback checks, Streamlit AppTest, and manual acceptance by the receiving team. Include invalid input, exact time boundaries, concurrent requests, and regression cases.
 
-Use the [QA test plan](QA_Test_Plan.md) and [test cases](QA_Test_Cases.md) for detailed steps. The [Week 10 milestone](QA_Milestones/M2_Week10_Test_Execution.md) records the remaining gates and owners.
+Use the QA test plan and test cases for detailed steps. The Week 10 milestone records the remaining gates and owners.
 
-The [v2 prototype requirements](https://github.com/zrubinova/TableFlip/blob/eaa31a73b0ba29b834f03811d64e613080be5ab5/Functional-requirements.md) are marked pending team approval. They specify manual refresh for staff and staff-assisted cancellation. The [business requirements](../Problem-statement-requirements.md) call for automatic staff updates (BR8) and guest self-cancellation (BR5). The PM and BA should confirm which baseline governs handover. The charter's O1 measures unaided guest **booking**, so guest cancellation is tracked separately under BR5.
+The v2 prototype requirements are marked pending team approval. They specify manual refresh for staff and staff-assisted cancellation. The business requirements call for automatic staff updates (BR8) and guest self-cancellation (BR5). The PM and BA should confirm which baseline governs handover. The charter’s O1 measures unaided guest **booking**, so guest cancellation is tracked separately under BR5.
 
 ## Test environment and results
 
 The application ran from an isolated copy of the pinned Developer commit using Linux, Python 3.12.14, Streamlit 1.66.1, disposable SQLite databases, and synthetic records. The Developer README recommends Python 3.14. The results below apply to the Python 3.12.14 environment used for this run.
 
-Run from the root of the Developer checkout in a virtual environment:
+Run the following commands from the root of the Developer checkout in a virtual environment.
 
-```sh
+~~~sh
 python -m pip install -r requirements.txt
 python -m unittest discover -s tableflip/tests -v
-```
+~~~
 
-**Result:** 32/33 passed (97.0%) in 3.635 seconds. See the [execution evidence](QA_Evidence/Week10_Execution.md).
+**Result:** 32/33 passed (97.0%) in 3.635 seconds. See the Week 10 execution evidence.
 
 | Requirement or risk | Tests and observations | Result |
 | --- | --- | --- |
@@ -62,8 +62,7 @@ IDs follow the prior QA report. Severity reflects impact. Priority reflects the 
 
 ## Sign-off and AI disclosure
 
-Record the approved baseline, the disposition of each open finding, the regression results for the handover build, and the receiving team's UAT decision before sign-off. See the [handover milestone](QA_Milestones/M2_Week10_Test_Execution.md).
+Record the approved baseline, the disposition of each open finding, the regression results for the handover build, and the receiving team’s UAT decision before sign-off. See the handover milestone.
 
 The Week 10 lecture slides informed the strategy, plan, test case traceability, defect log, and release recommendation. AI assisted with probe design and evidence compilation. The results are based on execution and source review. Human sign-off remains pending.
 
-[Project charter](../Project-charter.md) · [Risk register](../Risk-register.md)
