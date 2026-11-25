@@ -2,7 +2,7 @@
 
 **Status:** Execution recorded. Release sign-off pending.  
 **QA owner:** Eman Abdai, per the project charter.  
-**Inputs:** [Week 7 blueprint review](M1_Week7_Blueprint_Review.md), [QA test plan](../QA_Test_Plan.md), [QA test cases](../QA_Test_Cases.md), and [Week 10 report and defect log](../QA_Test_Report.md).
+**Inputs:** Week 7 blueprint review, QA test plan, QA test cases, and Week 10 report and defect log.
 
 | Gate | Completion evidence | Owner | Status |
 | --- | --- | --- | --- |
@@ -15,4 +15,3 @@
 
 The charter requires a completed test run and zero open critical allocation defects before the Week 11 dry run. If the full business requirements govern handover, include guest self-cancellation and timed multi-session staff updates in the acceptance run. QA records the test recommendation. The PM records the scope and risk decision.
 
-[Project charter](../../Project-charter.md) · [Risk register](../../Risk-register.md)
