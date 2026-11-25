@@ -1,7 +1,7 @@
 # TableFlip — Week 10 execution evidence
 
 **Execution date:** 25 November 2026  
-**Application commit:** [`e09b423f6c94df345eab907ad7d6c1c14f578711`](https://github.com/zrubinova/TableFlip/commit/e09b423f6c94df345eab907ad7d6c1c14f578711)  
+**Application commit:** The developer commit.  
 **Environment:** Python 3.12.14, Streamlit 1.66.1, disposable SQLite databases, synthetic test records.
 
 ## Automated regression suite
@@ -45,4 +45,4 @@ In an isolated AppTest session, inspect the public booking tab. Open the staff v
 
 **Observed:** The public tab had no cancellation button. Incorrect and cleared credentials hid staff data. The configured demo password displayed the staff reservation and table views.
 
-[Week 10 QA test report](../QA_Test_Report.md)
+
